@@ -4,6 +4,9 @@ on:
   push:
     branches: ["main"]
   pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
 
 jobs:
   test:
@@ -17,6 +20,11 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Compile JOB-002
         run: PYTHONPATH=src python scripts/run_job_002.py
+      - name: Exercise batch throughput
+        run: |
+          mkdir -p /tmp/sdna-batch-in
+          cp fixtures/job_002.json /tmp/sdna-batch-in/JOB-002.json
+          PYTHONPATH=src python scripts/run_batch.py /tmp/sdna-batch-in artifacts/batch --strategy strategies/hospitality_operations.json
       - name: Syntax-check passive observer
         run: node --check viewer/app.js
       - name: Preserve projection receipt
