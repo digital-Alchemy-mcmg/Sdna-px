@@ -13,7 +13,10 @@
     "normalized_projection",
     "dynamic_layout_elements",
     "resume_factory_handoff",
-    "run_fingerprint_sha256"
+    "run_fingerprint_sha256",
+    "strategy_lock",
+    "graph_connection_rays",
+    "binding_rays"
   ],
   "properties": {
     "contract_version": {
@@ -75,6 +78,40 @@
     "run_fingerprint_sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "strategy_lock": {
+      "type": "object",
+      "required": [
+        "strategy_id",
+        "persona_surface",
+        "active_plane_order",
+        "active_plane_scores"
+      ],
+      "properties": {
+        "strategy_id": {
+          "type": "string"
+        },
+        "persona_surface": {
+          "type": "string"
+        },
+        "active_plane_order": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "string"
+          }
+        },
+        "active_plane_scores": {
+          "type": "object"
+        }
+      }
+    },
+    "graph_connection_rays": {
+      "type": "array"
+    },
+    "binding_rays": {
+      "type": "array"
     }
   },
   "additionalProperties": true
