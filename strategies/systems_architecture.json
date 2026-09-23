@@ -1,0 +1,19 @@
+{
+  "strategy_id": "SYSTEMS_ARCHITECTURE",
+  "persona_surface": "SYSTEMS_ARCHITECTURE",
+  "strategy_source": "Recovered run_mara_traversal_test.py domain score block",
+  "active_plane_scores": {
+    "plane_04": 98,
+    "plane_03": 94,
+    "plane_05": 88,
+    "plane_02": 82,
+    "plane_01": 65,
+    "plane_06": 60
+  },
+  "active_plane_order": ["plane_04","plane_03","plane_05","plane_02"],
+  "binding_policy": {
+    "direct_match_threshold": 2,
+    "inactive_planes_are_non_bind": true,
+    "active_non_direct_is_transferable": true
+  }
+}
