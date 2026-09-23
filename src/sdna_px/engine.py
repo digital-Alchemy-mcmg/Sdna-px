@@ -272,10 +272,22 @@ class SpatialDNAEngine:
             "polarity_zone": zone,
         }
 
-    def compile(self, observation: dict[str, Any]) -> dict[str, Any]:
+    def compile(
+        self,
+        observation: dict[str, Any],
+        strategy: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         receptors = observation["demand_envelope"]["receptors"]
         strategy_id = observation.get("strategy_id")
-        strategy = self.strategies.get(strategy_id) if strategy_id else None
+        if strategy is not None:
+            explicit_id = strategy.get("strategy_id")
+            if strategy_id and explicit_id and strategy_id != explicit_id:
+                raise SpatialDNAError(
+                    f"Strategy mismatch: observation requests {strategy_id}, explicit strategy is {explicit_id}"
+                )
+            strategy_id = explicit_id or strategy_id
+        else:
+            strategy = self.strategies.get(strategy_id) if strategy_id else None
         if strategy_id and strategy is None:
             raise SpatialDNAError(f"Unknown strategy_id: {strategy_id}")
         bindings = self.bind(receptors, strategy=strategy)
