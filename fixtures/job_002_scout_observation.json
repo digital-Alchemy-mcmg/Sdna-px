@@ -1,0 +1,33 @@
+{
+  "contract_version": "SCOUT_TARGET_OBSERVATION_v1",
+  "observation_id": "JOB-002",
+  "strategy_id": "HOSPITALITY_OPERATIONS_LEADERSHIP",
+  "timestamp": "2026-09-22T03:45:00Z",
+  "provenance": {
+    "collection_date": "2026-09-22T03:45:00Z",
+    "vendor": "Historical Spatial DNA calibration corpus",
+    "source_url": "",
+    "disk_cartridge_hash": ""
+  },
+  "entity_metadata": {
+    "employer": "Method Hospitality",
+    "job_title": "Restaurant Assistant General Manager",
+    "location": {"city":"Detroit","state":"MI","postal_code":"48226","workplace_type":"ON_SITE"},
+    "employment_type": "Full-time",
+    "compensation": {"raw":"$70,000-$75,000 / year","currency":"USD","interval":"ANNUAL","min":70000,"max":75000},
+    "industry": "Hospitality"
+  },
+  "demand_envelope": {
+    "verbatim_clauses": [
+      {"clause_id":"REQ-01","section":"Responsibilities","category":"Operational & Shift Leadership","weight":5,"text":"Direct day-to-day high-volume dining, floor execution, front-of-house service standards, and labor shift balancing."},
+      {"clause_id":"REQ-02","section":"Responsibilities","category":"Financial & P&L Discipline","weight":5,"text":"Drive prime cost management, inventory reconciliation, food/beverage cost variance controls, and margin optimization."},
+      {"clause_id":"REQ-03","section":"Responsibilities","category":"Workforce Training & Team Development","weight":4,"text":"Recruit, onboard, train, and develop hospitality workforce across FOH/BOH, enforcing accountability and retention."},
+      {"clause_id":"REQ-04","section":"Requirements","category":"Compliance, Health & Safety Standards","weight":4,"text":"Maintain strict audit readiness, health department compliance, food safety certifications, and liquor licensing (MLCC)."},
+      {"clause_id":"REQ-05","section":"Responsibilities","category":"Cross-Functional Systems & Guest Retention","weight":3,"text":"Lead hospitality service culture, resolve high-stakes guest escalations, and coordinate multi-outlet/banquet crossover."}
+    ],
+    "negative_space_constraints": [
+      "No outside sales / pure commission quotas",
+      "On-premise high-volume dining room focus, not remote customer support"
+    ]
+  }
+}
