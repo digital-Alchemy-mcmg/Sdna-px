@@ -29,8 +29,21 @@ jobs:
           PYTHONPATH=src python scripts/run_batch.py /tmp/sdna-batch-in artifacts/batch --strategy strategies/hospitality_operations.json
       - name: Syntax-check passive observer
         run: node --check viewer/app.js
+      - name: Build Three.js observer
+        run: |
+          cd web
+          npm install --no-audit --no-fund
+          npm run build
       - name: Preserve projection receipt
         uses: actions/upload-artifact@v4
         with:
           name: job-002-projection
-          path: artifacts/job_002_projection.json
+          path: |
+            artifacts/job_002_projection.json
+            artifacts/job_002_from_scout.json
+            artifacts/batch/batch_manifest.json
+      - name: Preserve Three.js observer build
+        uses: actions/upload-artifact@v4
+        with:
+          name: spatial-dna-observer
+          path: web/dist
