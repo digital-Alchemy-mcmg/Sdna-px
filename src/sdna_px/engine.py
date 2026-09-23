@@ -350,6 +350,34 @@ class SpatialDNAEngine:
                 "rendered_with_trace": f"{a['proposition']} [Bound: {a['atom_id']}]",
             })
 
+        atom_projection = {a["atom_id"]: a for a in atoms}
+        graph_connection_rays = []
+        for edge in self.edges:
+            source = atom_projection[edge["source"]]
+            target = atom_projection[edge["target"]]
+            if source["binding_class"] == "NON_BIND" or target["binding_class"] == "NON_BIND":
+                continue
+            graph_connection_rays.append({
+                "edge_id": edge["edge_id"],
+                "source": edge["source"],
+                "target": edge["target"],
+                "relation": edge["relation"],
+                "description": edge.get("description", ""),
+                "source_coordinates": {"x": source["x"], "y": source["y"], "z": source["z"]},
+                "target_coordinates": {"x": target["x"], "y": target["y"], "z": target["z"]},
+            })
+
+        binding_rays = [
+            {
+                "atom_id": a["atom_id"],
+                "binding_class": a["binding_class"],
+                "from": {"x": a["x"], "y": a["y"], "z": a["z"]},
+                "to": {"x": 0.0, "y": 0.0, "z": 0.0},
+            }
+            for a in atoms
+            if a["binding_class"] in {"DIRECT_BIND", "TRANSFERABLE_BIND"}
+        ]
+
         counts = {
             "total_atoms_evaluated": len(atoms),
             "direct_bind_count": sum(a["binding_class"] == "DIRECT_BIND" for a in atoms),
@@ -357,6 +385,8 @@ class SpatialDNAEngine:
             "non_bind_count": sum(a["binding_class"] == "NON_BIND" for a in atoms),
             "ceiling_polarity_count": sum(a["polarity_zone"] == "CEILING" for a in atoms),
             "floor_polarity_count": sum(a["polarity_zone"] == "FLOOR" for a in atoms),
+            "graph_connection_ray_count": len(graph_connection_rays),
+            "binding_ray_count": len(binding_rays),
         }
 
         active_planes = []
@@ -492,6 +522,8 @@ class SpatialDNAEngine:
                 "counts": counts,
             },
             "spatial_atoms_projection": atoms,
+            "graph_connection_rays": graph_connection_rays,
+            "binding_rays": binding_rays,
             "normalized_projection": {
                 "claims": claims,
                 "projection_rule": "No expression may exceed its source atom semantic ceiling.",
