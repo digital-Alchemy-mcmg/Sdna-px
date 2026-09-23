@@ -62,8 +62,38 @@ def _concepts(text: str) -> set[str]:
 
 
 def _stable_jitter(atom_id: str) -> float:
+    """Deterministic angular offset in the recovered ±12° written contract."""
     n = int(hashlib.sha256(atom_id.encode("utf-8")).hexdigest()[:8], 16)
-    return float((n % 3001) / 100.0 - 15.0)
+    return float((n % 2401) / 100.0 - 12.0)
+
+
+_TOKEN_ALIASES = {
+    "management": "manage", "manager": "manage", "managed": "manage", "managing": "manage",
+    "leadership": "lead", "leader": "lead", "directing": "lead", "directed": "lead",
+    "operations": "operations", "operational": "operations",
+    "training": "train", "trained": "train", "onboarding": "onboard", "onboarded": "onboard",
+    "workforce": "workforce", "team": "workforce", "teams": "workforce", "staff": "workforce",
+    "retention": "retain", "retained": "retain",
+    "recruiting": "recruit", "recruited": "recruit",
+    "compliant": "compliance", "auditing": "audit", "audits": "audit",
+    "services": "service", "guests": "guest",
+    "scheduling": "schedule", "scheduled": "schedule",
+    "inventory": "inventory", "inventories": "inventory",
+    "financial": "finance", "financials": "finance",
+    "costs": "cost", "margins": "margin",
+}
+
+
+def _lexemes(text: str) -> set[str]:
+    t = text.lower()
+    t = t.replace("front-of-house", " foh ").replace("back-of-house", " boh ")
+    t = t.replace("p&l", " pnl ").replace("new store opening", " nso ")
+    words = re.findall(r"[a-z0-9]+", t)
+    stop = {
+        "a","an","and","or","the","to","of","in","on","for","with","across","at","by","from",
+        "as","into","via","is","are","be","this","that","candidate","served","holds","provided",
+    }
+    return {_TOKEN_ALIASES.get(w, w) for w in words if w not in stop and len(w) > 2}
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -132,37 +162,53 @@ class SpatialDNAEngine:
             if e["source"] not in self.node_by_id or e["target"] not in self.node_by_id:
                 raise SpatialDNAError(f"{e.get('edge_id')}: edge endpoint absent from node ledger")
 
-    def _raw_binding(self, atom: dict[str, Any], receptors: list[dict[str, Any]]) -> Binding:
+    def _raw_binding(
+        self,
+        atom: dict[str, Any],
+        receptors: list[dict[str, Any]],
+        active_planes: set[str],
+        direct_threshold: int,
+    ) -> Binding:
+        # Strategy lock controls the candidate lens before the demand envelope is applied.
+        # Inactive domains are suppressed, not "rescored" into the strategy by the job.
+        if atom["plane_assignment"] not in active_planes:
+            return Binding(
+                atom_id=atom["atom_id"],
+                binding_class="NON_BIND",
+                relevance=0.15,
+                matched_receptors=(),
+                matched_concepts=(),
+            )
+
         atom_text = " ".join(str(atom.get(k, "")) for k in (
             "domain", "branch_provenance", "category", "semantic_ceiling", "proposition"
         ))
-        atom_concepts = _concepts(atom_text)
+        atom_terms = _lexemes(atom_text)
         matched_receptors: list[str] = []
         all_hits: set[str] = set()
-        weighted = 0.0
+        max_hits = 0
+
         for receptor in receptors:
             receptor_text = f"{receptor.get('category', '')} {receptor.get('verbatim_text', receptor.get('verbatim_clause', ''))}"
-            hits = atom_concepts & _concepts(receptor_text)
+            hits = atom_terms & _lexemes(receptor_text)
             if hits:
                 matched_receptors.append(receptor["receptor_id"])
                 all_hits |= hits
-                weighted += len(hits) * float(receptor.get("weight", 1))
+                max_hits = max(max_hits, len(hits))
 
-        hit_count = len(all_hits)
-        relevance = min(1.0, 0.20 + 0.11 * hit_count + 0.025 * weighted) if hit_count else 0.0
-
-        # Direct requires multiple independent semantic hinges or broad receptor coverage.
-        if hit_count >= 3 or (hit_count >= 2 and len(matched_receptors) >= 2):
+        # Recovered gate: strong direct match requires >=2 keyword/context matches.
+        # Broad coverage across multiple receptors also qualifies as direct.
+        if max_hits >= direct_threshold or len(set(matched_receptors)) >= 2:
             cls = "DIRECT_BIND"
-        elif hit_count >= 1:
-            cls = "TRANSFERABLE_BIND"
+            relevance = 0.95
         else:
-            cls = "NON_BIND"
+            cls = "TRANSFERABLE_BIND"
+            relevance = 0.75
 
         return Binding(
             atom_id=atom["atom_id"],
             binding_class=cls,
-            relevance=round(relevance, 6),
+            relevance=relevance,
             matched_receptors=tuple(sorted(set(matched_receptors))),
             matched_concepts=tuple(sorted(all_hits)),
         )
@@ -170,70 +216,18 @@ class SpatialDNAEngine:
     def bind(
         self,
         receptors: list[dict[str, Any]],
-        strategy: dict[str, Any] | None = None,
+        strategy: dict[str, Any],
     ) -> dict[str, Binding]:
-        bindings = {n["atom_id"]: self._raw_binding(n, receptors) for n in self.nodes}
+        active_planes = set(strategy["active_plane_order"])
+        direct_threshold = int(strategy.get("binding_policy", {}).get("direct_match_threshold", 2))
+        return {
+            n["atom_id"]: self._raw_binding(n, receptors, active_planes, direct_threshold)
+            for n in self.nodes
+        }
 
-        if strategy:
-            policy = strategy.get("binding_policy", {})
-            threshold = int(policy.get("direct_match_threshold", 2))
-            active = set(strategy.get("active_plane_order", []))
-            strategy_bindings: dict[str, Binding] = {}
-            for node in self.nodes:
-                atom_id = node["atom_id"]
-                raw = bindings[atom_id]
-                if policy.get("inactive_planes_are_non_bind", False) and node["plane_assignment"] not in active:
-                    cls = "NON_BIND"
-                elif len(raw.matched_concepts) >= threshold:
-                    cls = "DIRECT_BIND"
-                elif policy.get("active_non_direct_is_transferable", False) and node["plane_assignment"] in active:
-                    cls = "TRANSFERABLE_BIND"
-                else:
-                    cls = raw.binding_class
-                relevance = raw.relevance
-                if cls == "DIRECT_BIND":
-                    relevance = max(relevance, 0.55)
-                elif cls == "TRANSFERABLE_BIND":
-                    relevance = max(relevance, 0.25)
-                strategy_bindings[atom_id] = Binding(
-                    atom_id=atom_id,
-                    binding_class=cls,
-                    relevance=round(relevance, 6),
-                    matched_receptors=raw.matched_receptors,
-                    matched_concepts=raw.matched_concepts,
-                )
-            bindings = strategy_bindings
-
-        # One-hop graph propagation can establish transferability, never direct evidence.
-        upgraded: dict[str, Binding] = dict(bindings)
-        for atom_id, b in bindings.items():
-            if b.binding_class != "NON_BIND":
-                continue
-            node = self.node_by_id[atom_id]
-            if strategy and strategy.get("binding_policy", {}).get("inactive_planes_are_non_bind", False):
-                if node["plane_assignment"] not in set(strategy.get("active_plane_order", [])):
-                    continue
-            direct_neighbors = [
-                nid for nid in self.adjacency.get(atom_id, ())
-                if bindings[nid].binding_class == "DIRECT_BIND"
-            ]
-            if direct_neighbors:
-                upgraded[atom_id] = Binding(
-                    atom_id=atom_id,
-                    binding_class="TRANSFERABLE_BIND",
-                    relevance=0.25,
-                    matched_receptors=(),
-                    matched_concepts=("graph_corroboration",),
-                )
-        return upgraded
-
-    def _plane_scores(self, bindings: dict[str, Binding]) -> dict[str, float]:
-        scores = defaultdict(float)
-        for n in self.nodes:
-            b = bindings[n["atom_id"]]
-            weight = {"DIRECT_BIND": 3.0, "TRANSFERABLE_BIND": 1.0, "NON_BIND": 0.0}[b.binding_class]
-            scores[n["plane_assignment"]] += weight * (0.5 + b.relevance)
-        return {p: round(scores[p], 6) for p in PLANE_META}
+    def _plane_scores(self, strategy: dict[str, Any]) -> dict[str, float]:
+        supplied = strategy.get("active_plane_scores", {})
+        return {p: float(supplied.get(p, 0.0)) for p in PLANE_META}
 
     def _coordinates(
         self,
@@ -252,14 +246,17 @@ class SpatialDNAEngine:
             x = z = 0.0
 
         state = str(atom.get("evidence_state", "")).upper()
-        if state in FLOOR_STATES:
+        if state in FLOOR_STATES or atom.get("conflict_flag"):
             y = -2.8
             zone = "FLOOR"
         elif binding.binding_class == "DIRECT_BIND":
-            y = min(5.0, 2.0 + binding.relevance * 2.5)
+            y = 4.1
             zone = "CEILING"
+        elif binding.binding_class == "TRANSFERABLE_BIND":
+            y = 1.0
+            zone = "BASELINE"
         else:
-            y = (binding.relevance - 0.5) * 0.8
+            y = -0.8
             zone = "BASELINE"
 
         x, y, z = round(x, 6), round(y, 6), round(z, 6)
@@ -419,7 +416,7 @@ class SpatialDNAEngine:
             })
 
         dynamic_layout_elements = {
-            "persona_surface": "TARGET_BOUNDED_EVIDENCE_PROJECTION",
+            "persona_surface": strategy["persona_surface"],
             "transducer_profile": "ATS_COMPLIANT_LINEAR",
             "layout_containers": [
                 {
