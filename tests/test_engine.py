@@ -83,6 +83,54 @@ class SpatialDNATest(unittest.TestCase):
         self.assertEqual(comparison["baseline_status"], "SOURCE_REPORTED_NOT_ASSUMED_AS_EXECUTION_TRUTH")
         self.assertIn("derived", comparison)
 
+    def test_semantic_match_radius_uses_recovered_contract(self):
+        for atom in self.payload["spatial_atoms_projection"]:
+            expected = min(10.0, max(3.0, 11.0 - atom["relevance"] * 7.0))
+            self.assertAlmostEqual(atom["match_radius"], expected, places=6)
+
+    def test_angular_azimuth_is_injected(self):
+        active = {p["plane_id"] for p in self.payload["spatial_configuration"]["active_lateral_planes"]}
+        for atom in self.payload["spatial_atoms_projection"]:
+            if atom["plane_id"] in active:
+                self.assertIsNotNone(atom["angular_azimuth_degrees"])
+                self.assertGreaterEqual(atom["angular_azimuth_degrees"], 0.0)
+                self.assertLess(atom["angular_azimuth_degrees"], 360.0)
+            else:
+                self.assertIsNone(atom["angular_azimuth_degrees"])
+
+    def test_observation_provenance_survives_payload(self):
+        self.assertEqual(self.payload["provenance"], self.observation["provenance"])
+
+    def test_dynamic_layout_contract_is_emitted(self):
+        layout = self.payload["dynamic_layout_elements"]
+        self.assertEqual(layout["persona_surface"], "TARGET_BOUNDED_EVIDENCE_PROJECTION")
+        ids = [c["container_id"] for c in layout["layout_containers"]]
+        self.assertEqual(ids, ["HEADER", "EXECUTIVE_PROJECTION", "TARGETED_WORK_HISTORY", "COMPETENCY_MATRIX"])
+
+    def test_layout_bound_atoms_exist_and_floor_is_excluded_from_projection_sections(self):
+        atom_by_id = {a["atom_id"]: a for a in self.payload["spatial_atoms_projection"]}
+        layout = self.payload["dynamic_layout_elements"]
+        containers = {c["container_id"]: c for c in layout["layout_containers"]}
+        for atom_id in containers["EXECUTIVE_PROJECTION"]["bound_atoms"]:
+            self.assertIn(atom_id, atom_by_id)
+            self.assertNotEqual(atom_by_id[atom_id]["polarity_zone"], "FLOOR")
+        for role in containers["TARGETED_WORK_HISTORY"]["roles"]:
+            for atom_id in role["bound_atoms"]:
+                self.assertIn(atom_id, atom_by_id)
+                self.assertNotEqual(atom_by_id[atom_id]["polarity_zone"], "FLOOR")
+        for atom_id in containers["COMPETENCY_MATRIX"]["bound_atoms"]:
+            self.assertIn(atom_id, atom_by_id)
+            self.assertNotEqual(atom_by_id[atom_id]["polarity_zone"], "FLOOR")
+
+    def test_nonbind_has_explicit_non_invented_suppression_signature(self):
+        for atom in self.payload["spatial_atoms_projection"]:
+            sig = atom["suppression_signature"]
+            if atom["binding_class"] == "NON_BIND":
+                self.assertEqual(sig["mode"], "NO_POSITIVE_BIND")
+                self.assertEqual(sig["triggered_constraints"], [])
+            else:
+                self.assertIsNone(sig)
+
 
 if __name__ == "__main__":
     unittest.main()
