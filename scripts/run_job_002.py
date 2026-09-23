@@ -17,3 +17,8 @@ print(f"wrote {out}")
 print(json.dumps(payload["spatial_configuration"]["counts"], indent=2))
 print("active_planes:", [p["plane_id"] for p in payload["spatial_configuration"]["active_lateral_planes"]])
 print("fingerprint:", payload["run_fingerprint_sha256"])
+
+classes = {"DIRECT_BIND": [], "TRANSFERABLE_BIND": [], "NON_BIND": []}
+for atom in payload["spatial_atoms_projection"]:
+    classes[atom["binding_class"]].append(atom["atom_id"])
+print("binding_classes:", json.dumps(classes, sort_keys=True))
