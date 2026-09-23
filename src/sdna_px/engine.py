@@ -88,9 +88,10 @@ class Binding:
 
 
 class SpatialDNAEngine:
-    def __init__(self, nodes: list[dict[str, Any]], edges: list[dict[str, Any]]):
+    def __init__(self, nodes: list[dict[str, Any]], edges: list[dict[str, Any]], strategies: dict[str, dict[str, Any]] | None = None):
         self.nodes = nodes
         self.edges = edges
+        self.strategies = strategies or {}
         self.node_by_id = {n["atom_id"]: n for n in nodes}
         self.adjacency: dict[str, set[str]] = defaultdict(set)
         for e in edges:
@@ -101,9 +102,16 @@ class SpatialDNAEngine:
     @classmethod
     def from_repo(cls, root: str | Path) -> "SpatialDNAEngine":
         root = Path(root)
+        strategies: dict[str, dict[str, Any]] = {}
+        strategy_dir = root / "strategies"
+        if strategy_dir.exists():
+            for path in sorted(strategy_dir.glob("*.json")):
+                strategy = json.loads(path.read_text(encoding="utf-8"))
+                strategies[strategy["strategy_id"]] = strategy
         return cls(
             _load_jsonl(root / "data" / "candidate_spatial_dna_nodes.jsonl"),
             _load_jsonl(root / "data" / "candidate_spatial_dna_edges.jsonl"),
+            strategies=strategies,
         )
 
     def validate_graph(self) -> None:
@@ -159,14 +167,52 @@ class SpatialDNAEngine:
             matched_concepts=tuple(sorted(all_hits)),
         )
 
-    def bind(self, receptors: list[dict[str, Any]]) -> dict[str, Binding]:
+    def bind(
+        self,
+        receptors: list[dict[str, Any]],
+        strategy: dict[str, Any] | None = None,
+    ) -> dict[str, Binding]:
         bindings = {n["atom_id"]: self._raw_binding(n, receptors) for n in self.nodes}
+
+        if strategy:
+            policy = strategy.get("binding_policy", {})
+            threshold = int(policy.get("direct_match_threshold", 2))
+            active = set(strategy.get("active_plane_order", []))
+            strategy_bindings: dict[str, Binding] = {}
+            for node in self.nodes:
+                atom_id = node["atom_id"]
+                raw = bindings[atom_id]
+                if policy.get("inactive_planes_are_non_bind", False) and node["plane_assignment"] not in active:
+                    cls = "NON_BIND"
+                elif len(raw.matched_concepts) >= threshold:
+                    cls = "DIRECT_BIND"
+                elif policy.get("active_non_direct_is_transferable", False) and node["plane_assignment"] in active:
+                    cls = "TRANSFERABLE_BIND"
+                else:
+                    cls = raw.binding_class
+                relevance = raw.relevance
+                if cls == "DIRECT_BIND":
+                    relevance = max(relevance, 0.55)
+                elif cls == "TRANSFERABLE_BIND":
+                    relevance = max(relevance, 0.25)
+                strategy_bindings[atom_id] = Binding(
+                    atom_id=atom_id,
+                    binding_class=cls,
+                    relevance=round(relevance, 6),
+                    matched_receptors=raw.matched_receptors,
+                    matched_concepts=raw.matched_concepts,
+                )
+            bindings = strategy_bindings
 
         # One-hop graph propagation can establish transferability, never direct evidence.
         upgraded: dict[str, Binding] = dict(bindings)
         for atom_id, b in bindings.items():
             if b.binding_class != "NON_BIND":
                 continue
+            node = self.node_by_id[atom_id]
+            if strategy and strategy.get("binding_policy", {}).get("inactive_planes_are_non_bind", False):
+                if node["plane_assignment"] not in set(strategy.get("active_plane_order", [])):
+                    continue
             direct_neighbors = [
                 nid for nid in self.adjacency.get(atom_id, ())
                 if bindings[nid].binding_class == "DIRECT_BIND"
@@ -231,9 +277,22 @@ class SpatialDNAEngine:
 
     def compile(self, observation: dict[str, Any]) -> dict[str, Any]:
         receptors = observation["demand_envelope"]["receptors"]
-        bindings = self.bind(receptors)
-        scores = self._plane_scores(bindings)
-        active = sorted(scores, key=lambda p: (-scores[p], p))[:4]
+        strategy_id = observation.get("strategy_id")
+        strategy = self.strategies.get(strategy_id) if strategy_id else None
+        if strategy_id and strategy is None:
+            raise SpatialDNAError(f"Unknown strategy_id: {strategy_id}")
+        bindings = self.bind(receptors, strategy=strategy)
+        if strategy:
+            scores = {
+                p: float(strategy.get("active_plane_scores", {}).get(p, 0.0))
+                for p in PLANE_META
+            }
+            active = list(strategy.get("active_plane_order", []))[:4]
+            if len(active) != 4:
+                raise SpatialDNAError(f"{strategy_id}: strategy must define exactly four active planes")
+        else:
+            scores = self._plane_scores(bindings)
+            active = sorted(scores, key=lambda p: (-scores[p], p))[:4]
         plane_azimuth = {plane: AZIMUTHS[i][1] for i, plane in enumerate(active)}
 
         atoms: list[dict[str, Any]] = []
@@ -403,6 +462,7 @@ class SpatialDNAEngine:
             "contract_version": "MARA_LAYOUT_PAYLOAD_v1",
             "source_observation_contract": observation.get("contract_version"),
             "source_observation_id": observation.get("observation_id"),
+            "strategy_id": strategy_id,
             "timestamp": observation.get("timestamp"),
             "provenance": dict(observation.get("provenance", {})),
             "metadata": {
