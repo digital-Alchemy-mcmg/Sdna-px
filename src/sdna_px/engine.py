@@ -278,30 +278,32 @@ class SpatialDNAEngine:
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         receptors = observation["demand_envelope"]["receptors"]
-        strategy_id = observation.get("strategy_id")
-        if strategy is not None:
-            explicit_id = strategy.get("strategy_id")
-            if strategy_id and explicit_id and strategy_id != explicit_id:
-                raise SpatialDNAError(
-                    f"Strategy mismatch: observation requests {strategy_id}, explicit strategy is {explicit_id}"
-                )
-            strategy_id = explicit_id or strategy_id
-        else:
-            strategy = self.strategies.get(strategy_id) if strategy_id else None
-        if strategy_id and strategy is None:
-            raise SpatialDNAError(f"Unknown strategy_id: {strategy_id}")
+        requested_strategy_id = observation.get("strategy_id")
+
+        if strategy is None and requested_strategy_id:
+            strategy = self.strategies.get(requested_strategy_id)
+        if strategy is None:
+            raise SpatialDNAError("STRATEGY_LOCK_ERROR: explicit strategy or strategy_id required")
+
+        strategy_id = strategy.get("strategy_id")
+        if not strategy_id:
+            raise SpatialDNAError("STRATEGY_LOCK_ERROR: strategy_id missing")
+        if requested_strategy_id and requested_strategy_id != strategy_id:
+            raise SpatialDNAError(
+                f"STRATEGY_LOCK_ERROR: observation requests {requested_strategy_id}, supplied {strategy_id}"
+            )
+
+        active = list(strategy.get("active_plane_order", []))
+        if len(active) != 4 or len(set(active)) != 4 or any(p not in PLANE_META for p in active):
+            raise SpatialDNAError(
+                f"{strategy_id}: strategy must define exactly four unique canonical active planes"
+            )
+
         bindings = self.bind(receptors, strategy=strategy)
-        if strategy:
-            scores = {
-                p: float(strategy.get("active_plane_scores", {}).get(p, 0.0))
-                for p in PLANE_META
-            }
-            active = list(strategy.get("active_plane_order", []))[:4]
-            if len(active) != 4:
-                raise SpatialDNAError(f"{strategy_id}: strategy must define exactly four active planes")
-        else:
-            scores = self._plane_scores(bindings)
-            active = sorted(scores, key=lambda p: (-scores[p], p))[:4]
+        scores = {
+            p: float(strategy.get("active_plane_scores", {}).get(p, 0.0))
+            for p in PLANE_META
+        }
         plane_azimuth = {plane: AZIMUTHS[i][1] for i, plane in enumerate(active)}
 
         atoms: list[dict[str, Any]] = []
