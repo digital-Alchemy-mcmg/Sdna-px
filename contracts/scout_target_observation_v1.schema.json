@@ -2,88 +2,66 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "SCOUT_TARGET_OBSERVATION_v1",
   "type": "object",
-  "required": [
-    "contract_version",
-    "observation_id",
-    "provenance",
-    "entity_metadata",
-    "demand_envelope"
-  ],
+  "required": ["contract_version","observation_id","provenance","entity_metadata","demand_envelope"],
   "properties": {
-    "contract_version": {
-      "const": "SCOUT_TARGET_OBSERVATION_v1"
-    },
-    "observation_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "strategy_id": {
-      "type": "string"
-    },
+    "contract_version": {"const":"SCOUT_TARGET_OBSERVATION_v1"},
+    "observation_id": {"type":"string","minLength":1},
+    "strategy_id": {"type":"string"},
     "provenance": {
-      "type": "object",
-      "required": [
-        "source_url",
-        "disk_cartridge_hash"
-      ],
-      "properties": {
-        "source_url": {
-          "type": "string"
-        },
-        "disk_cartridge_hash": {
-          "type": "string"
-        }
-      }
+      "type":"object",
+      "required":["source_url","disk_cartridge_hash"],
+      "properties":{
+        "collection_date":{"type":"string"},
+        "vendor":{"type":"string"},
+        "source_url":{"type":"string"},
+        "disk_cartridge_hash":{"type":"string"}
+      },
+      "additionalProperties":true
     },
     "entity_metadata": {
-      "type": "object",
-      "required": [
-        "employer",
-        "job_title",
-        "location",
-        "compensation"
-      ]
+      "type":"object",
+      "required":["employer","job_title","location","compensation"],
+      "additionalProperties":true
     },
     "demand_envelope": {
-      "type": "object",
-      "required": [
-        "receptors"
-      ],
-      "properties": {
-        "receptors": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "required": [
-              "receptor_id",
-              "category",
-              "verbatim_text"
-            ],
-            "properties": {
-              "receptor_id": {
-                "type": "string"
-              },
-              "category": {
-                "type": "string"
-              },
-              "verbatim_text": {
-                "type": "string"
-              },
-              "weight": {
-                "type": "number"
-              }
-            }
+      "type":"object",
+      "required":["verbatim_clauses"],
+      "properties":{
+        "verbatim_clauses":{
+          "type":"array","minItems":1,
+          "items":{
+            "type":"object",
+            "required":["clause_id","section","text"],
+            "properties":{
+              "clause_id":{"type":"string"},
+              "section":{"type":"string"},
+              "text":{"type":"string","minLength":1},
+              "category":{"type":"string"},
+              "weight":{"type":"number"}
+            },
+            "additionalProperties":true
           }
         },
-        "negative_space_constraints": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        "receptors":{
+          "description":"Optional downstream field populated by deterministic demand decomposition. Scout itself is not required to produce it.",
+          "type":"array",
+          "items":{
+            "type":"object",
+            "required":["receptor_id","category","verbatim_text"],
+            "properties":{
+              "receptor_id":{"type":"string"},
+              "source_clause_id":{"type":"string"},
+              "category":{"type":"string"},
+              "verbatim_text":{"type":"string"},
+              "weight":{"type":"number"}
+            },
+            "additionalProperties":true
           }
-        }
-      }
+        },
+        "negative_space_constraints":{"type":"array","items":{"type":"string"}}
+      },
+      "additionalProperties":true
     }
   },
-  "additionalProperties": true
+  "additionalProperties":true
 }
