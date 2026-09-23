@@ -195,7 +195,8 @@ class SpatialDNAEngine:
         binding: Binding,
         plane_azimuth: dict[str, float],
     ) -> dict[str, Any]:
-        match_radius = max(3.0, 10.0 - binding.relevance * 6.0) if binding.relevance else 10.0
+        # Recovered semantic-distance contract: R = clamp(11 - 7*match_strength, 3, 10).
+        match_radius = min(10.0, max(3.0, 11.0 - binding.relevance * 7.0))
         plane = atom["plane_assignment"]
         if plane in plane_azimuth:
             theta = math.radians(plane_azimuth[plane] + _stable_jitter(atom["atom_id"]))
@@ -217,12 +218,14 @@ class SpatialDNAEngine:
 
         x, y, z = round(x, 6), round(y, 6), round(z, 6)
         geom_radius = round(math.sqrt(x * x + z * z), 6)
+        angular_azimuth = None if geom_radius == 0 else round((math.degrees(math.atan2(x, z)) + 360.0) % 360.0, 6)
         if not (-10 <= x <= 10 and -5 <= y <= 5 and -10 <= z <= 10):
             raise SpatialDNAError(f"OUT_OF_BOUNDS_ERROR: {atom['atom_id']} -> {(x, y, z)}")
         return {
             "x": x, "y": y, "z": z,
             "match_radius": round(match_radius, 6),
             "geometric_radius": geom_radius,
+            "angular_azimuth_degrees": angular_azimuth,
             "polarity_zone": zone,
         }
 
@@ -251,6 +254,13 @@ class SpatialDNAEngine:
                 "relevance": b.relevance,
                 "matched_receptors": list(b.matched_receptors),
                 "matched_concepts": list(b.matched_concepts),
+                "quarantine_action": ("PRESERVE_CONFLICT_ON_FLOOR" if str(n.get("evidence_state", "")).upper() in FLOOR_STATES else None),
+                "suppression_signature": ({
+                    "mode": "NO_POSITIVE_BIND",
+                    "negative_space_constraints": list(observation["demand_envelope"].get("negative_space_constraints", [])),
+                    "triggered_constraints": [],
+                    "note": "NON_BIND reflects absence of positive receptor binding; no negative constraint is asserted without a deterministic trigger rule.",
+                } if b.binding_class == "NON_BIND" else None),
                 **coords,
             })
 
@@ -291,12 +301,110 @@ class SpatialDNAEngine:
                 "domain_alignment_score": scores[p],
             })
 
+        # Surface Transducer: deterministic layout packet for Resume Factory.
+        safe_claims = [
+            c for c in claims
+            if next(a for a in atoms if a["atom_id"] == c["atom_id"])["polarity_zone"] != "FLOOR"
+        ]
+        safe_claims.sort(
+            key=lambda c: (
+                -next(a for a in atoms if a["atom_id"] == c["atom_id"])["relevance"],
+                c["atom_id"],
+            )
+        )
+
+        header_atoms = [atom_id for atom_id in ("ID-001", "ID-002", "ID-003") if atom_id in self.node_by_id]
+        identity_name = self.node_by_id.get("ID-001", {}).get("candidate", "Christopher Flournoy")
+        identity_location = self.node_by_id.get("ID-002", {}).get("proposition", "")
+
+        executive_claims = [c for c in safe_claims if c["binding_class"] == "DIRECT_BIND"][:4]
+        executive_bound = [c["atom_id"] for c in executive_claims]
+        executive_content = " ".join(c["rendered_with_trace"] for c in executive_claims)
+
+        roles = []
+        work_atoms = [
+            a for a in atoms
+            if a["domain"] == "Work History"
+            and a["binding_class"] != "NON_BIND"
+            and a["polarity_zone"] != "FLOOR"
+        ]
+        grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for atom in work_atoms:
+            grouped[atom["branch_provenance"]].append(atom)
+        for company in sorted(grouped):
+            group = sorted(grouped[company], key=lambda a: (-a["relevance"], a["atom_id"]))
+            roles.append({
+                "company": company,
+                "location": "",
+                "title": group[0]["semantic_ceiling"],
+                "tenure": self.node_by_id[group[0]["atom_id"]].get("chronology", ""),
+                "bound_atoms": [a["atom_id"] for a in group],
+                "bullets": [f'{a["proposition"]} [Bound: {a["atom_id"]}]' for a in group],
+            })
+
+        competency_atoms = [
+            a for a in atoms
+            if a["domain"] in {"Education and Technical Competency", "Creative Works and Projects"}
+            and a["binding_class"] != "NON_BIND"
+            and a["polarity_zone"] != "FLOOR"
+        ]
+        competency_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for atom in competency_atoms:
+            competency_groups[self.node_by_id[atom["atom_id"]].get("category", atom["domain"])].append(atom)
+        bound_categories = []
+        for category in sorted(competency_groups):
+            group = sorted(competency_groups[category], key=lambda a: (-a["relevance"], a["atom_id"]))
+            bound_categories.append({
+                "category": category,
+                "items": [f'{a["proposition"]} [Bound: {a["atom_id"]}]' for a in group],
+            })
+
+        dynamic_layout_elements = {
+            "persona_surface": "TARGET_BOUNDED_EVIDENCE_PROJECTION",
+            "transducer_profile": "ATS_COMPLIANT_LINEAR",
+            "layout_containers": [
+                {
+                    "container_id": "HEADER",
+                    "order": 1,
+                    "content": {
+                        "name": identity_name,
+                        "title": observation["entity_metadata"].get("job_title", ""),
+                        "location": identity_location,
+                    },
+                    "bound_atoms": header_atoms,
+                },
+                {
+                    "container_id": "EXECUTIVE_PROJECTION",
+                    "order": 2,
+                    "receptor_alignment": sorted({
+                        rid
+                        for c in executive_claims
+                        for rid in next(a for a in atoms if a["atom_id"] == c["atom_id"])["matched_receptors"]
+                    }),
+                    "content": executive_content,
+                    "bound_atoms": executive_bound,
+                },
+                {
+                    "container_id": "TARGETED_WORK_HISTORY",
+                    "order": 3,
+                    "roles": roles,
+                },
+                {
+                    "container_id": "COMPETENCY_MATRIX",
+                    "order": 4,
+                    "bound_categories": bound_categories,
+                    "bound_atoms": [a["atom_id"] for a in competency_atoms],
+                },
+            ],
+        }
+
         entity = observation["entity_metadata"]
         canonical = {
             "contract_version": "MARA_LAYOUT_PAYLOAD_v1",
             "source_observation_contract": observation.get("contract_version"),
             "source_observation_id": observation.get("observation_id"),
             "timestamp": observation.get("timestamp"),
+            "provenance": dict(observation.get("provenance", {})),
             "metadata": {
                 "target_job_id": observation.get("observation_id"),
                 "target_title": entity.get("job_title"),
@@ -317,6 +425,7 @@ class SpatialDNAEngine:
                 "claims": claims,
                 "projection_rule": "No expression may exceed its source atom semantic ceiling.",
             },
+            "dynamic_layout_elements": dynamic_layout_elements,
             "resume_factory_handoff": {
                 "claims": claims,
                 "prohibited_atom_ids": [a["atom_id"] for a in atoms if a["binding_class"] == "NON_BIND"],
