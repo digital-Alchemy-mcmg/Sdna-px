@@ -15,7 +15,7 @@ Executable reconstruction of the Spatial DNA candidate-evidence graph and projec
 
 ## Pipeline
 
-`JOB -> DEMAND RECEPTORS -> CANDIDATE GRAPH -> BINDING -> SPATIAL COORDINATES -> MARA_LAYOUT_PAYLOAD_v1`
+`SCOUT_TARGET_OBSERVATION_v1 -> DEMAND RECEPTORS -> STRATEGY-LOCKED CANDIDATE GRAPH -> BINDING -> SPATIAL COORDINATES -> MARA_LAYOUT_PAYLOAD_v1 -> Resume Factory`
 
 Chronology is metadata/lens, not the organizing axis of the candidate graph.
 
@@ -26,6 +26,10 @@ Requires Python 3.11+ and no third-party runtime dependencies.
 ```bash
 python -m unittest discover -s tests -v
 python scripts/run_job_002.py
+python scripts/run_pipeline.py fixtures/job_002_scout_observation.json --strategy strategies/hospitality_operations.json -o artifacts/job_002_from_scout.json
+
+# many Scout packets, one locked strategy
+python scripts/run_batch.py scout_packets/ artifacts/batch --strategy strategies/hospitality_operations.json
 ```
 
 The JOB-002 command writes `artifacts/job_002_projection.json`.
@@ -42,3 +46,10 @@ To inspect that artifact visually without changing its coordinates, open `viewer
 6. Same input produces the same result.
 
 See `docs/IMPLEMENTATION_DECISIONS.md` for the recovered-vs-resolved contract boundary.
+
+
+## Throughput contract
+
+Batch execution is not a bypass. Every packet runs through the same Scout observation decomposition, MARA strategy lock, Spatial DNA binding/geometry, and layout-payload compiler as the single-job path. A batch emits one projection per job plus `batch_manifest.json` with fingerprints and failures.
+
+The repository CI executes on every push/PR and on an hourly schedule. It tests the current 44-node/11-edge graph, JOB-002 lineage compatibility, the pre-receptor Scout handoff, batch throughput, the passive observer syntax, provenance, containment, quarantine, and deterministic replay.
