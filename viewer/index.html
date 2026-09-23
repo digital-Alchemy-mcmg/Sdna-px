@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spatial DNA PX Observer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Spatial DNA PX</h1>
+    <p>Passive coordinate observer — camera movement never mutates graph data.</p>
+  </div>
+  <label class="load">Load MARA_LAYOUT_PAYLOAD_v1 <input id="file" type="file" accept=".json,application/json"></label>
+</header>
+<main>
+  <section class="stage">
+    <canvas id="canvas"></canvas>
+    <div id="status">Load a generated projection JSON artifact.</div>
+  </section>
+  <aside>
+    <h2>Selected atom</h2>
+    <pre id="detail">None</pre>
+    <h2>Run</h2>
+    <pre id="run">None</pre>
+  </aside>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
