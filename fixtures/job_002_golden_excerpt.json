@@ -1,0 +1,32 @@
+{
+  "source": "MARA_JOB_002_DYNAMIC_LAYOUT_PAYLOAD",
+  "job_id": "JOB-002",
+  "expected_counts_reported": {
+    "direct_bind_count": 12,
+    "transferable_bind_count": 16,
+    "non_bind_count": 16,
+    "ceiling_polarity_count": 11,
+    "floor_polarity_count": 1,
+    "active_connection_rays": 6
+  },
+  "active_planes": [
+    {"plane_id":"plane_02","score":98,"azimuth":"Lateral North (+Z)"},
+    {"plane_id":"plane_01","score":92,"azimuth":"Lateral East (+X)"},
+    {"plane_id":"plane_06","score":85,"azimuth":"Lateral South (-Z)"},
+    {"plane_id":"plane_05","score":80,"azimuth":"Lateral West (-X)"}
+  ],
+  "golden_rows": [
+    {"atom_id":"WH-BOBC-001","binding_class":"DIRECT_BIND","receptors":["D_01","D_02","D_03"],"polarity":"FLOOR","x":0.0,"y":-2.8,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-BOBC-002","binding_class":"DIRECT_BIND","receptors":["D_02","D_03"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-BOBC-003","binding_class":"DIRECT_BIND","receptors":["D_04"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-TWIN-001","binding_class":"DIRECT_BIND","receptors":["D_01","D_05"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-TWIN-002","binding_class":"DIRECT_BIND","receptors":["D_01","D_02"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-TWIN-003","binding_class":"DIRECT_BIND","receptors":["D_01","D_03"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"WH-TWIN-004","binding_class":"DIRECT_BIND","receptors":["D_03"],"polarity":"CEILING","x":0.0,"y":4.1,"z":4.35,"relevance":0.95},
+    {"atom_id":"ID-001","binding_class":"TRANSFERABLE_BIND","receptors":[],"polarity":"BASELINE","x":5.75,"y":1.0,"z":0.0,"relevance":0.75},
+    {"atom_id":"ID-002","binding_class":"TRANSFERABLE_BIND","receptors":[],"polarity":"BASELINE","x":5.75,"y":1.0,"z":0.0,"relevance":0.75},
+    {"atom_id":"ID-003","binding_class":"DIRECT_BIND","receptors":["D_01","D_05"],"polarity":"CEILING","x":5.75,"y":4.1,"z":0.0,"relevance":0.95},
+    {"atom_id":"RF-REF-001","binding_class":"TRANSFERABLE_BIND","receptors":["D_03"],"polarity":"BASELINE","x":0.0,"y":1.0,"z":-5.75,"relevance":0.75},
+    {"atom_id":"PS-PRFL-001","binding_class":"DIRECT_BIND","receptors":["D_01","D_05"],"polarity":"CEILING","x":-4.35,"y":4.1,"z":0.0,"relevance":0.95}
+  ]
+}
