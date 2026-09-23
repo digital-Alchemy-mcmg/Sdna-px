@@ -14,7 +14,8 @@ class SpatialDNATest(unittest.TestCase):
     def setUpClass(cls):
         cls.engine = SpatialDNAEngine.from_repo(ROOT)
         cls.observation = json.loads((ROOT / "fixtures" / "job_002.json").read_text(encoding="utf-8"))
-        cls.payload = cls.engine.compile(cls.observation)
+        cls.strategy = json.loads((ROOT / "strategies" / "hospitality_operations.json").read_text(encoding="utf-8"))
+        cls.payload = cls.engine.compile(cls.observation, cls.strategy)
 
     def test_recovered_graph_cardinality(self):
         self.assertEqual(len(self.engine.nodes), 44)
@@ -70,13 +71,14 @@ class SpatialDNATest(unittest.TestCase):
             )
 
     def test_replay_is_deterministic(self):
-        second = self.engine.compile(self.observation)
+        second = self.engine.compile(self.observation, self.strategy)
         self.assertEqual(self.payload, second)
         self.assertEqual(self.payload["run_fingerprint_sha256"], second["run_fingerprint_sha256"])
 
     def test_work_history_is_active_for_job_002(self):
         active = [x["plane_id"] for x in self.payload["spatial_configuration"]["active_lateral_planes"]]
-        self.assertIn("plane_02", active)
+        self.assertEqual(active, ["plane_02", "plane_01", "plane_06", "plane_05"])
+        self.assertEqual(self.payload["spatial_configuration"]["counts"]["non_bind_count"], 16)
 
     def test_historical_baseline_is_comparison_not_override(self):
         comparison = self.payload["historical_baseline_comparison"]
