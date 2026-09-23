@@ -11,7 +11,9 @@
     "candidate_edges": "data/candidate_spatial_dna_edges.jsonl",
     "hospitality_strategy": "strategies/hospitality_operations.json",
     "systems_strategy": "strategies/systems_architecture.json",
-    "passive_viewer": "viewer/index.html"
+    "passive_viewer": "viewer/index.html",
+    "diagnostic_viewer": "viewer/index.html",
+    "threejs_observer": "web/"
   },
   "contracts": {
     "scout_input": "contracts/scout_target_observation_v1.schema.json",
@@ -21,6 +23,18 @@
     "ci_workflow": ".github/workflows/test.yml",
     "scheduled_regression": "hourly at minute 17 UTC",
     "lineage_collision_record": "docs/LINEAGE_COLLISIONS.md",
-    "authority_manifest": "docs/AUTHORITY_MANIFEST.json"
+    "authority_manifest": "docs/AUTHORITY_MANIFEST.json",
+    "golden_compatibility": "tests/test_golden_compatibility.py",
+    "full_pipeline": "tests/test_pipeline.py",
+    "batch_throughput": "tests/test_batch.py",
+    "external_watch": "ChatGPT condition watch configured outside repository"
+  },
+  "lineage": {
+    "current_candidate_revision": "44 atoms / 11 v2 edges",
+    "legacy_job_002_collision": [
+      "PS-PRFL-001",
+      "RF-REF-001"
+    ],
+    "policy": "NO_SILENT_ALIAS"
   }
 }
