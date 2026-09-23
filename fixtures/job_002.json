@@ -1,0 +1,40 @@
+{
+  "contract_version": "SCOUT_TARGET_OBSERVATION_v1",
+  "observation_id": "JOB-002",
+  "timestamp": "2026-09-22T03:45:00Z",
+  "provenance": {
+    "vendor": "Historical Spatial DNA calibration corpus",
+    "source_url": "",
+    "disk_cartridge_hash": ""
+  },
+  "entity_metadata": {
+    "employer": "Method Hospitality",
+    "job_title": "Restaurant Assistant General Manager",
+    "location": {"city":"Detroit","state":"MI","postal_code":"48226","workplace_type":"ON_SITE"},
+    "employment_type": "Full-time",
+    "compensation": {"raw":"$70,000-$75,000 / year","currency":"USD","interval":"ANNUAL","min":70000,"max":75000},
+    "industry": "Hospitality"
+  },
+  "demand_envelope": {
+    "receptors": [
+      {"receptor_id":"D_01","category":"Operational & Shift Leadership","verbatim_text":"Direct day-to-day high-volume dining, floor execution, front-of-house service standards, and labor shift balancing.","weight":5},
+      {"receptor_id":"D_02","category":"Financial & P&L Discipline","verbatim_text":"Drive prime cost management, inventory reconciliation, food/beverage cost variance controls, and margin optimization.","weight":5},
+      {"receptor_id":"D_03","category":"Workforce Training & Team Development","verbatim_text":"Recruit, onboard, train, and develop hospitality workforce across FOH/BOH, enforcing accountability and retention.","weight":4},
+      {"receptor_id":"D_04","category":"Compliance, Health & Safety Standards","verbatim_text":"Maintain strict audit readiness, health department compliance, food safety certifications, and liquor licensing (MLCC).","weight":4},
+      {"receptor_id":"D_05","category":"Cross-Functional Systems & Guest Retention","verbatim_text":"Lead hospitality service culture, resolve high-stakes guest escalations, and coordinate multi-outlet/banquet crossover.","weight":3}
+    ],
+    "negative_space_constraints": [
+      "No outside sales / pure commission quotas",
+      "On-premise high-volume dining room focus, not remote customer support"
+    ]
+  },
+  "historical_baseline": {
+    "active_planes": ["plane_02","plane_01","plane_06","plane_05"],
+    "direct_bind_count": 12,
+    "transferable_bind_count": 16,
+    "non_bind_count": 16,
+    "ceiling_count": 11,
+    "floor_count": 1,
+    "status": "SOURCE_REPORTED_NOT_ASSUMED_AS_EXECUTION_TRUTH"
+  }
+}
