@@ -18,7 +18,7 @@ class BatchTest(unittest.TestCase):
             inp = td / "in"
             out = td / "out"
             inp.mkdir()
-            source = (ROOT / "fixtures" / "job_002.json").read_text(encoding="utf-8")
+            source = (ROOT / "fixtures" / "job_002_scout_observation.json").read_text(encoding="utf-8")
             one = json.loads(source)
             two = json.loads(source)
             two["observation_id"] = "JOB-002-B"
