@@ -1,0 +1,28 @@
+{
+  "authority_manifest_version": "1",
+  "candidate_nodes": {
+    "drive_file_id": "1QEwKy8Dqi_Qi1jtrgr0Bxuq6H_APl3w7XlyDa-Neuf4",
+    "drive_title": "candidate_spatial_dna_nodes.jsonl",
+    "expected_records": 44,
+    "repo_path": "data/candidate_spatial_dna_nodes.jsonl",
+    "repo_blob_sha": "5b49af386e3de621cc55921e88d0e6ef428288f4",
+    "verification": "EXACT_TEXT_MATCH_AFTER_BOM_AND_NEWLINE_NORMALIZATION"
+  },
+  "candidate_edges": {
+    "drive_file_id": "1eCtZkLEWYQBbjrZHiMMq3gW796xTixDUZx1BXFki96Y",
+    "drive_title": "candidate_spatial_dna_edges_v2.jsonl",
+    "expected_records": 11,
+    "repo_path": "data/candidate_spatial_dna_edges.jsonl",
+    "repo_blob_sha": "d0ba78d54ffae151f9934fdfa4bff94b432a3c22",
+    "verification": "EXACT_TEXT_MATCH_AFTER_BOM_AND_NEWLINE_NORMALIZATION"
+  },
+  "wiring_contract": {
+    "drive_file_id": "13nUgBQ56NbpZ4kTplG443r7fcOfVo38y1PFh2X8cXng",
+    "title": "Forensic Interface Analysis: Spatial DNA Wiring Requirements"
+  },
+  "job_002_projection_source": {
+    "drive_file_id": "1xda6sjss5vI-13ylrANICqx1tdS5HUwitX4B2oZOzB0",
+    "title": "MARA_JOB_002_PROJECTION_PAYLOAD.json"
+  },
+  "lineage_note": "The legacy JOB-002 golden payload references two atom IDs absent from the recovered current 44-node ledger. See docs/LINEAGE_COLLISIONS.md."
+}
