@@ -504,6 +504,12 @@ class SpatialDNAEngine:
             "source_observation_contract": observation.get("contract_version"),
             "source_observation_id": observation.get("observation_id"),
             "strategy_id": strategy_id,
+            "strategy_lock": {
+                "strategy_id": strategy_id,
+                "persona_surface": strategy["persona_surface"],
+                "active_plane_order": active,
+                "active_plane_scores": scores,
+            },
             "timestamp": observation.get("timestamp"),
             "provenance": dict(observation.get("provenance", {})),
             "metadata": {
