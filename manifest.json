@@ -1,0 +1,26 @@
+{
+  "manifest_version": "RESUME_HARNESS_MANIFEST_v1.0",
+  "system": "MARA Spatial Candidate DNA Resume Test Harness",
+  "status": "EXECUTABLE_WITH_RECORDED_LEGACY_LINEAGE_COLLISION",
+  "entry_points": {
+    "single_scout_pipeline": "scripts/run_pipeline.py",
+    "batch_pipeline": "scripts/run_batch.py",
+    "golden_fixture": "fixtures/job_002_scout_observation.json",
+    "golden_compatibility_excerpt": "fixtures/job_002_golden_excerpt.json",
+    "candidate_nodes": "data/candidate_spatial_dna_nodes.jsonl",
+    "candidate_edges": "data/candidate_spatial_dna_edges.jsonl",
+    "hospitality_strategy": "strategies/hospitality_operations.json",
+    "systems_strategy": "strategies/systems_architecture.json",
+    "passive_viewer": "viewer/index.html"
+  },
+  "contracts": {
+    "scout_input": "contracts/scout_target_observation_v1.schema.json",
+    "mara_output": "contracts/mara_layout_payload_v1.schema.json"
+  },
+  "validation": {
+    "ci_workflow": ".github/workflows/test.yml",
+    "scheduled_regression": "hourly at minute 17 UTC",
+    "lineage_collision_record": "docs/LINEAGE_COLLISIONS.md",
+    "authority_manifest": "docs/AUTHORITY_MANIFEST.json"
+  }
+}
