@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .engine import SpatialDNAEngine, SpatialDNAError
+from .pipeline import compile_scout_observation
 
 
 def compile_batch(
@@ -23,7 +24,7 @@ def compile_batch(
     for path in sorted(input_dir.glob("*.json")):
         try:
             observation = json.loads(path.read_text(encoding="utf-8"))
-            payload = engine.compile(observation, strategy)
+            payload = compile_scout_observation(engine, observation, strategy)
             job_id = payload["metadata"]["target_job_id"] or path.stem
             out = output_dir / f"{job_id}.projection.json"
             body = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
