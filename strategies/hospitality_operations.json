@@ -1,0 +1,19 @@
+{
+  "strategy_id": "HOSPITALITY_OPERATIONS_LEADERSHIP",
+  "persona_surface": "HOSPITALITY_OPERATIONS_LEADERSHIP",
+  "strategy_source": "Recovered MARA Spatial Candidate DNA bootstrap",
+  "active_plane_scores": {
+    "plane_02": 98,
+    "plane_01": 92,
+    "plane_06": 85,
+    "plane_05": 80,
+    "plane_03": 0,
+    "plane_04": 0
+  },
+  "active_plane_order": ["plane_02","plane_01","plane_06","plane_05"],
+  "binding_policy": {
+    "direct_match_threshold": 2,
+    "inactive_planes_are_non_bind": true,
+    "active_non_direct_is_transferable": true
+  }
+}
