@@ -133,6 +133,17 @@ class SpatialDNATest(unittest.TestCase):
             else:
                 self.assertIsNone(sig)
 
+    def test_graph_and_binding_rays_are_explicit_layers(self):
+        self.assertIn("graph_connection_rays", self.payload)
+        self.assertIn("binding_rays", self.payload)
+        counts = self.payload["spatial_configuration"]["counts"]
+        self.assertEqual(counts["graph_connection_ray_count"], len(self.payload["graph_connection_rays"]))
+        self.assertEqual(counts["binding_ray_count"], len(self.payload["binding_rays"]))
+        for ray in self.payload["graph_connection_rays"]:
+            self.assertIn(ray["source"], self.engine.node_by_id)
+            self.assertIn(ray["target"], self.engine.node_by_id)
+
+
 
 if __name__ == "__main__":
     unittest.main()
