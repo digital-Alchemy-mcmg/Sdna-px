@@ -105,7 +105,7 @@ class SpatialDNATest(unittest.TestCase):
 
     def test_dynamic_layout_contract_is_emitted(self):
         layout = self.payload["dynamic_layout_elements"]
-        self.assertEqual(layout["persona_surface"], "TARGET_BOUNDED_EVIDENCE_PROJECTION")
+        self.assertEqual(layout["persona_surface"], self.strategy["persona_surface"])
         ids = [c["container_id"] for c in layout["layout_containers"]]
         self.assertEqual(ids, ["HEADER", "EXECUTIVE_PROJECTION", "TARGETED_WORK_HISTORY", "COMPETENCY_MATRIX"])
 
