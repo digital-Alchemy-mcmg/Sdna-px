@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "HARNESS_ERROR_v1",
+  "type": "object",
+  "required": ["status","error_code","stage","details"],
+  "properties": {
+    "status": {"const":"ERROR"},
+    "error_code": {"type":"string"},
+    "stage": {"type":"string"},
+    "details": {"type":"string"}
+  },
+  "additionalProperties": false
+}
