@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "MARA_LAYOUT_PAYLOAD_v1",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "source_observation_id",
+    "provenance",
+    "metadata",
+    "demand_envelope",
+    "spatial_configuration",
+    "spatial_atoms_projection",
+    "normalized_projection",
+    "dynamic_layout_elements",
+    "resume_factory_handoff",
+    "run_fingerprint_sha256"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "MARA_LAYOUT_PAYLOAD_v1"
+    },
+    "source_observation_id": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "spatial_configuration": {
+      "type": "object",
+      "required": [
+        "active_lateral_planes",
+        "counts"
+      ]
+    },
+    "spatial_atoms_projection": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "atom_id",
+          "binding_class",
+          "x",
+          "y",
+          "z",
+          "match_radius",
+          "geometric_radius",
+          "polarity_zone",
+          "evidence_provenance"
+        ]
+      }
+    },
+    "normalized_projection": {
+      "type": "object",
+      "required": [
+        "claims"
+      ]
+    },
+    "dynamic_layout_elements": {
+      "type": "object",
+      "required": [
+        "persona_surface",
+        "transducer_profile",
+        "layout_containers"
+      ]
+    },
+    "resume_factory_handoff": {
+      "type": "object",
+      "required": [
+        "claims",
+        "prohibited_atom_ids",
+        "quarantined_atom_ids"
+      ]
+    },
+    "run_fingerprint_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}
