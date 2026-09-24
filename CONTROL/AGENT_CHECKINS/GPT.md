@@ -8,8 +8,8 @@ runner_2_schedule: hourly at :45 America/Detroit
 effective_cadence_minutes: 30
 repository_target: digital-Alchemy-mcmg/Sdna-px
 control_file_read: CONTROL/CHECKIN_CADENCE.md
-last_verified_commit_before_receipt: 1a99c1d470a7d2627068c93b40ba6f298a54e933
-ci_status: Spatial DNA regression push run 35997761337 completed successfully on head 1a99c1d470a7d2627068c93b40ba6f298a54e933
+last_verified_commit_before_receipt: adce1a2fcee30f230f8cc4fe486b6b086c4fa862
+ci_status: Spatial DNA regression push run 36000897966 completed successfully on head adce1a2fcee30f230f8cc4fe486b6b086c4fa862
 open_blocker: Issue #1 — Recover legacy JOB-002 atom revision or approve explicit migration map
 blocker_detail: Historical JOB-002 references PS-PRFL-001 and RF-REF-001, which are absent from the recovered current 44-node ledger. Do not alias or conceal this mismatch. Closure requires recovery of the historical ledger revision or an approved evidence-backed migration map.
 agent_receipt_state: CONTROL/AGENT_CHECKINS contains GPT.md only; Spark and Meta have not written compliance receipts to upstream main.
@@ -19,4 +19,4 @@ unresolved_handoff_state: Spark and Meta repository compliance/check-in receipts
 progress_state: No product-capability commit observed since cadence/control installation; recent repository writes remain GPT check-in receipt refreshes. Observation/CI loop is active, but the unresolved lineage blocker has not advanced.
 action_boundary: No synthetic reconstruction or aliasing performed. No user message relay required; durable receipt refreshed in repository.
 limitations: none for effective twice-hourly cadence; implemented as two independent hourly runners staggered 30 minutes apart
-verified_at: 2026-09-24 scheduled check-in
+verified_at: 2026-09-24T09:16:02-04:00
