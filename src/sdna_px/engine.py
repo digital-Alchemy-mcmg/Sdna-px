@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .semantic import defensible_without_retreat, objective_authority
+
 
 class SpatialDNAError(ValueError):
     pass
@@ -320,6 +322,12 @@ class SpatialDNAEngine:
                 "conflict_flag": n.get("conflict_flag"),
                 "semantic_ceiling": n["semantic_ceiling"],
                 "proposition": n["proposition"],
+                # Candidate-record authority is distinct from external verification.
+                # Missing outside corroboration is not a numerical penalty.
+                "source_authority": objective_authority(
+                    authoritative_source=True,
+                    contradicted=bool(n.get("conflict_flag")),
+                ),
                 "binding_class": b.binding_class,
                 "relevance": b.relevance,
                 "matched_receptors": list(b.matched_receptors),
@@ -347,6 +355,10 @@ class SpatialDNAEngine:
                 "evidence_state": a["evidence_state"],
                 "conflict_flag": a["conflict_flag"],
                 "provenance": a["evidence_provenance"],
+                "defensible_without_retreat": defensible_without_retreat(
+                    supported=a["polarity_zone"] != "FLOOR",
+                    materially_misleading=False,
+                ),
                 "rendered_with_trace": f"{a['proposition']} [Bound: {a['atom_id']}]",
             })
 
