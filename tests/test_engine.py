@@ -70,6 +70,16 @@ class SpatialDNATest(unittest.TestCase):
                 f"{source['proposition']} [Bound: {source['atom_id']}]",
             )
 
+    def test_candidate_reported_is_provenance_not_automatic_penalty(self):
+        atom = next(a for a in self.payload["spatial_atoms_projection"] if a["atom_id"] == "WH-TWIN-002")
+        self.assertEqual(atom["evidence_state"], "CANDIDATE-REPORTED")
+        self.assertEqual(atom["source_authority"], 1.0)
+
+    def test_authorized_claims_pass_defensibility_gate(self):
+        for claim in self.payload["normalized_projection"]["claims"]:
+            if not claim["conflict_flag"]:
+                self.assertTrue(claim["defensible_without_retreat"])
+
     def test_replay_is_deterministic(self):
         second = self.engine.compile(self.observation, self.strategy)
         self.assertEqual(self.payload, second)
