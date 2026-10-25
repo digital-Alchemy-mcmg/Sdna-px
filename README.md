@@ -63,6 +63,8 @@ The repository CI executes on every push/PR and on an hourly schedule. It tests 
 
 The `scout_workbench` package and `notebooks/SCOUT_A1_A5_Workbench.ipynb` implement a portable deterministic A1-A4 path and the isolated A5 request/receipt boundary. The included adapter and fixtures are simulations; they do not invoke a runner or reasoner. See `docs/SCOUT_A_WORKBENCH.md` for boundaries, execution, and unresolved production-authority dependencies.
 
+The `mara_b_workbench` package and `notebooks/MARA_B1_B4_Workbench.ipynb` continue from an authorized Scout release through independent B4 audit and stop at B5 entry. Semantic adapter outputs in the fixture are simulated; B3 reads the repository's actual candidate SDNA graph.
+
 
 ## Current executable boundary
 
