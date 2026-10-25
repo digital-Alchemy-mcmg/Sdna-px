@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"MARA_META_RENDER_REQUEST_v1","type":"object","required":["schema","content","reading_order","layout_family","surface","semantic_geometry","c4_sha256","rewrite_authority"],"properties":{"schema":{"const":"MARA_META_RENDER_REQUEST_v1"},"rewrite_authority":{"const":false}}}

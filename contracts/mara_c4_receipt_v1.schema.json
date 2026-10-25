@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"MARA_C4_RECEIPT_v1","type":"object","required":["schema","c3_sha256","disposition","planes","findings","validator","c4_sha256"],"properties":{"schema":{"const":"MARA_C4_RECEIPT_v1"},"disposition":{"enum":["PASS","REWORK_REQUIRED"]}}}

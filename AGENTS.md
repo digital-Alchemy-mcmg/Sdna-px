@@ -20,6 +20,8 @@ No agent may mutate frozen A4 submissions, original sidecar evidence, or prior A
 
 No agent may alter target requirements to favor the candidate, alter candidate truth to favor the target, treat titles as proof, cite unselected evidence in B4, satisfy a hard gate with a narrower claim, or execute B5 from the Segment B workbench.
 
+In the final segment, B5 owns only five-Prism strategy; C1 owns inclusion; C2 owns bounded wording; C3 owns construction and measured geometry; C4 independently validates and routes rework; C5 renders approved artifacts. Meta is rendering-only. No stage may rewrite another stage's committed output, reopen B4 truth, treat Prism percentages as confidence or page area, or claim browser/print validation that was not executed.
+
 ## Required practice
 
 Before editing, inspect current contracts, tests, status, and authority assumptions. Record contradictions and missing authoritative dependencies. Keep core logic importable and notebook cells orchestration-only. Use explicit adapters and configuration slots for external systems. Opening a notebook must have no live runner, network, reasoner, or external-write side effects.

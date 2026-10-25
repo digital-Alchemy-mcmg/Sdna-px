@@ -65,6 +65,8 @@ The `scout_workbench` package and `notebooks/SCOUT_A1_A5_Workbench.ipynb` implem
 
 The `mara_b_workbench` package and `notebooks/MARA_B1_B4_Workbench.ipynb` continue from an authorized Scout release through independent B4 audit and stop at B5 entry. Semantic adapter outputs in the fixture are simulated; B3 reads the repository's actual candidate SDNA graph.
 
+The `mara_c_workbench` package and `notebooks/MARA_B5_C5_Workbench.ipynb` implement the final B5-C5 custody path and produce integrity-bound Markdown and semantic HTML fixtures. External browser/print geometry remains explicitly unverified.
+
 
 ## Current executable boundary
 

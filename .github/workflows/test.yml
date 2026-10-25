@@ -22,6 +22,8 @@ jobs:
         run: PYTHONPATH=src python scripts/run_scout_workbench.py fixtures/scout_a_scope_fixture.json fixtures/scout_a_records_fixture.json artifacts/scout
       - name: Exercise MARA B1-B4 fixture
         run: PYTHONPATH=src python scripts/run_mara_b_fixture.py artifacts/mara-b
+      - name: Exercise MARA B5-C5 fixture
+        run: PYTHONPATH=src python scripts/run_mara_c_fixture.py artifacts/mara-c
       - name: Compile JOB-002
         run: PYTHONPATH=src python scripts/run_job_002.py
       - name: Run full Scout pipeline
