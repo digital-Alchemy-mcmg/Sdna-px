@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_A5_REASONER_REQUEST_v1",
+  "type": "object",
+  "required": ["schema", "submission_id", "submission_sha256", "intent_version", "criteria_version", "certified_disk", "observations", "allowed_decisions", "write_access"],
+  "properties": {
+    "schema": {"const": "SCOUT_A5_REASONER_REQUEST_v1"},
+    "allowed_decisions": {"const": ["ACCEPT", "HOLD", "REJECT"]},
+    "write_access": {"const": false},
+    "observations": {"type": "array", "minItems": 1}
+  }
+}

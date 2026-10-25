@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_A2_INTAKE_v1",
+  "type": "object",
+  "required": ["schema", "adapter", "simulation", "lineage", "return_state", "raw_return", "sidecar", "coherence"],
+  "properties": {
+    "schema": {"const": "SCOUT_A2_INTAKE_v1"},
+    "return_state": {"enum": ["RECEIVED", "EMPTY", "PARTIAL", "FAILED", "UNRESOLVED"]},
+    "raw_return": {"type": "array"},
+    "sidecar": {"type": "object", "required": ["format", "records"]},
+    "coherence": {"type": "object", "required": ["status", "exceptions"]}
+  }
+}

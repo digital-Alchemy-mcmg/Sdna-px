@@ -1,0 +1,16 @@
+{
+  "fixture_status": "SYNTHETIC_TEST_ONLY",
+  "disk_id": "DSK-000001",
+  "label": "Hospitality leadership fixture",
+  "description": "Non-production scope used to exercise the mechanical workbench.",
+  "version": "1.0.0-test",
+  "zip": "48226",
+  "radius_miles": 25,
+  "naics": [{"code": "722511", "label": "Full-Service Restaurants"}],
+  "soc": [{"code": "11-9051", "label": "Food Service Managers"}],
+  "include": ["general manager"],
+  "exclude": ["commission only"],
+  "limit": 10,
+  "observation_contract": ["Observation_ID", "Collection_Date", "Vendor", "Employer", "Job_Title", "City", "State", "ZIP", "Industry", "Employment_Type", "Compensation", "Source_URL", "Duplicate_Count"],
+  "classification_provenance": {"authority": "SYNTHETIC_TEST_FIXTURE_NOT_OPERATOR_APPROVED"}
+}

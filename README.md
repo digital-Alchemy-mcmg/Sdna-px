@@ -59,6 +59,10 @@ Batch execution is not a bypass. Every packet runs through the same Scout observ
 
 The repository CI executes on every push/PR and on an hourly schedule. It tests the current 44-node/11-edge graph, JOB-002 lineage compatibility, the pre-receptor Scout handoff, batch throughput, the passive observer syntax, provenance, containment, quarantine, and deterministic replay.
 
+## Scout A1-A5 workbench
+
+The `scout_workbench` package and `notebooks/SCOUT_A1_A5_Workbench.ipynb` implement a portable deterministic A1-A4 path and the isolated A5 request/receipt boundary. The included adapter and fixtures are simulations; they do not invoke a runner or reasoner. See `docs/SCOUT_A_WORKBENCH.md` for boundaries, execution, and unresolved production-authority dependencies.
+
 
 ## Current executable boundary
 

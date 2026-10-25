@@ -1,0 +1,17 @@
+[
+  {
+    "Observation_ID": "OBS-TEST-001",
+    "Collection_Date": "2026-01-02",
+    "Vendor": "Synthetic fixture",
+    "Employer": "Example Hospitality",
+    "Job_Title": "General Manager",
+    "City": "Detroit",
+    "State": "MI",
+    "ZIP": "48226",
+    "Industry": "Hospitality",
+    "Employment_Type": "Full-time",
+    "Compensation": "$1 synthetic",
+    "Source_URL": "https://example.invalid/jobs/OBS-TEST-001",
+    "Duplicate_Count": 0
+  }
+]

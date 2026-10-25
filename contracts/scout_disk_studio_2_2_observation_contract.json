@@ -1,0 +1,28 @@
+{
+  "contract_version": "SCOUT_DISK_STUDIO_2.2.0_OBSERVATION_v1",
+  "source": "Scout Disk Studio 2.2.0 reference export",
+  "field_count": 13,
+  "ordered_fields": [
+    "Observation_ID",
+    "Collection_Date",
+    "Vendor",
+    "Employer",
+    "Job_Title",
+    "City",
+    "State",
+    "ZIP",
+    "Industry",
+    "Employment_Type",
+    "Compensation",
+    "Source_URL",
+    "Duplicate_Count"
+  ],
+  "validation_policy": {
+    "exact_names": true,
+    "exact_order": true,
+    "additional_fields": false,
+    "duplicate_fields": false,
+    "missing_fields": false,
+    "silent_repair": false
+  }
+}

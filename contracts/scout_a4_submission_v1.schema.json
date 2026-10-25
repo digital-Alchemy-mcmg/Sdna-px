@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_A4_SUBMISSION_v1",
+  "type": "object",
+  "required": ["schema", "submission_id", "state", "identity", "inspection", "verification", "commitments", "handoff"],
+  "properties": {
+    "schema": {"const": "SCOUT_A4_SUBMISSION_v1"},
+    "state": {"const": "READY_FOR_A5"},
+    "commitments": {
+      "type": "object",
+      "required": ["sidecar_sha256", "envelope_sha256", "submission_sha256"],
+      "properties": {
+        "sidecar_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "envelope_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "submission_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_TRAVELING_ENVELOPE_v1",
+  "type": "object",
+  "required": ["schema", "envelope_uuid", "job_uuid", "state", "lineage", "sidecar", "lookup", "receipts"],
+  "properties": {
+    "schema": {"const": "SCOUT_TRAVELING_ENVELOPE_v1"},
+    "envelope_uuid": {"type": "string", "format": "uuid"},
+    "job_uuid": {"type": "string", "format": "uuid"},
+    "receipts": {"type": "array", "minItems": 1},
+    "lookup": {"type": "object", "required": ["observations"]}
+  }
+}

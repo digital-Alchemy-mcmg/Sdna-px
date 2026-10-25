@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_A1_COMPILATION_v1",
+  "type": "object",
+  "required": ["schema", "disk_count", "disks", "execution_status"],
+  "properties": {
+    "schema": {"const": "SCOUT_A1_COMPILATION_v1"},
+    "disk_count": {"type": "integer", "minimum": 1, "maximum": 3},
+    "disks": {"type": "array", "minItems": 1, "maxItems": 3},
+    "execution_status": {"const": "NOT_EXECUTED"}
+  }
+}

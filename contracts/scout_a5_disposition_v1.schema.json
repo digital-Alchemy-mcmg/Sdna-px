@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_A5_DISPOSITION_v1",
+  "type": "object",
+  "required": ["schema", "decision_id", "submission", "evaluation", "dispositions", "recorded_at", "disposition_sha256"],
+  "properties": {
+    "schema": {"const": "SCOUT_A5_DISPOSITION_v1"},
+    "dispositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["observation_uuid", "decision", "reason", "evidence_refs", "material_considerations"],
+        "properties": {"decision": {"enum": ["ACCEPT", "REJECT", "HOLD"]}}
+      }
+    }
+  }
+}

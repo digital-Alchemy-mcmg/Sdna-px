@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SCOUT_B1_RELEASE_v1",
+  "type": "object",
+  "required": ["schema", "status", "destination", "a4_submission_sha256", "a5_decision_id", "a5_disposition_sha256", "authorized_observation_uuids", "sidecar_lookup", "release_sha256"],
+  "properties": {
+    "schema": {"const": "SCOUT_B1_RELEASE_v1"},
+    "status": {"enum": ["AUTHORIZED", "BLOCKED"]},
+    "destination": {"const": "B1"},
+    "authorized_observation_uuids": {"type": "array", "items": {"type": "string", "format": "uuid"}}
+  }
+}

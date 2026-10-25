@@ -18,6 +18,8 @@ jobs:
           python-version: "3.11"
       - name: Run regression suite
         run: python -m unittest discover -s tests -v
+      - name: Exercise Scout A1-A5 mechanical fixture
+        run: PYTHONPATH=src python scripts/run_scout_workbench.py fixtures/scout_a_scope_fixture.json fixtures/scout_a_records_fixture.json artifacts/scout
       - name: Compile JOB-002
         run: PYTHONPATH=src python scripts/run_job_002.py
       - name: Run full Scout pipeline
